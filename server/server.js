@@ -5,6 +5,7 @@ const bodyParse = require('body-parser')
 let {Mongoose} = require('./db/mongoosedb');
 let {Todo} = require('./models/todos');
 let {User} = require('./models/users');
+let {authenticate} = require('./middleware/authenticate');
 let {ObjectID} = require('mongodb');
 
 //beforeEach((done) =>{
@@ -97,12 +98,8 @@ app.post('/users', (req, res) => {
         res.status(400).send(e);
     });
 });
-app.get('/users', (req, res) => {
-    User.find().then((users) =>{
-        res.send({users})
-    }, (e) => {
-        res.status(400).send(e);
-    })
+app.get('/users/me', authenticate, (req, res) => {
+    res.send(req.user);
 });
 app.get('/users/:id', (req, res) => {
     let id = req.params.id;
